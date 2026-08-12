@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doo0 — Routine & Task Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/calendar.css">
+<link rel="stylesheet" href="css/week.css">
+<link rel="stylesheet" href="css/routines.css">
+<link rel="stylesheet" href="css/history.css">
+<link rel="stylesheet" href="css/stats.css">
+<link rel="stylesheet" href="css/categories.css">
+<link rel="stylesheet" href="css/search.css">
+<link rel="stylesheet" href="css/modal.css">
+<link rel="stylesheet" href="css/toast.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-mark">◆</span>
+      <span class="brand-name">Dooo</span>
+    </div>
+    <div class="nav-group">
+      <button class="nav-item active" data-view="dashboard"><span class="ic">◆</span> Dashboard</button>
+      <button class="nav-item" data-view="calendar"><span class="ic">▦</span> Calendar</button>
+      <button class="nav-item" data-view="week"><span class="ic">≣</span> Week</button>
+      <button class="nav-item" data-view="routines"><span class="ic">↻</span> My Routines</button>
+      <button class="nav-item" data-view="history"><span class="ic">◷</span> History</button>
+      <button class="nav-item" data-view="stats"><span class="ic">▲</span> Statistics</button>
+      <button class="nav-item" data-view="categories"><span class="ic">◈</span> Categories</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <button class="nav-item" data-view="settings"><span class="ic">⚙</span> Settings</button>
+    </div>
+    <div class="sidebar-foot">
+      <div class="theme-toggle">
+        <span>v1.0 · Local data</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" id="hamburgerBtn">☰</button>
+        <div class="search-box">
+          <span class="ic">⌕</span>
+          <input type="text" id="globalSearch" placeholder="Search tasks across all history…">
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="clock">
+          <div class="time" id="clockTime">--:--</div>
+          <div id="clockDate">-</div>
+        </div>
+        <button class="btn-icon" id="exportBtn" title="Export data">⇩</button>
+        <button class="btn-icon" id="importBtn" title="Import data">⇧</button>
+        <input type="file" id="importFile" accept="application/json" style="display:none">
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ============ DASHBOARD ============ -->
+      <div class="view active" id="view-dashboard">
+        <div class="date-hero">
+          <div>
+            <div class="eyebrow" id="dashEyebrow">Today</div>
+            <h1 id="dashDateTitle">—</h1>
+          </div>
+          <div class="date-nav">
+            <button id="prevDayBtn">← Prev</button>
+            <button class="primary" id="todayBtn">Today</button>
+            <button id="nextDayBtn">Next →</button>
+            <button id="applyRoutineBtn">↻ Apply Routine</button>
+          </div>
+        </div>
+
+        <div class="stat-row">
+          <div class="card stat-card">
+            <div class="label">Progress</div>
+            <div class="progress-track"><div class="progress-fill" id="dashProgressFill" style="width:0%"></div></div>
+            <div class="progress-pct" id="dashProgressPct">0%</div>
+          </div>
+          <div class="card stat-card">
+            <div class="label">Completed</div>
+            <div class="stat-num good" id="dashCompleted">0</div>
+            <div class="stat-sub" id="dashCompletedSub">of 0 tasks</div>
+          </div>
+          <div class="card stat-card">
+            <div class="label">Remaining</div>
+            <div class="stat-num" id="dashRemaining">0</div>
+            <div class="stat-sub">tasks left</div>
+          </div>
+          <div class="card stat-card current-task-card">
+            <div class="label">Current / Next</div>
+            <div>
+              <div class="task-time" id="dashCurrentTime">—</div>
+              <div class="task-title" id="dashCurrentTitle">No task</div>
+              <div class="task-cat" id="dashCurrentCat"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-wrap">
+          <div class="timeline-head">
+            <h2>Timeline</h2>
+            <button class="add-task-btn" id="addTaskBtn">+ Add Task</button>
+          </div>
+          <div class="timeline" id="timelineContainer"></div>
+        </div>
+      </div>
+
+      <!-- ============ CALENDAR ============ -->
+      <div class="view" id="view-calendar">
+        <div class="page-head">
+          <div>
+            <h1 id="calTitle">—</h1>
+            <div class="sub">Tap a date to jump to its timeline</div>
+          </div>
+          <div class="date-nav">
+            <button id="calPrevMonth">← Month</button>
+            <button class="primary" id="calTodayBtn">This Month</button>
+            <button id="calNextMonth">Month →</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+      </div>
+
+      <!-- ============ WEEK ============ -->
+      <div class="view" id="view-week">
+        <div class="page-head">
+          <div>
+            <h1 id="weekTitle">—</h1>
+            <div class="sub">Completion by category, Monday–Sunday</div>
+          </div>
+          <div class="date-nav">
+            <button id="weekPrevBtn">← Prev Week</button>
+            <button class="primary" id="weekTodayBtn">This Week</button>
+            <button id="weekNextBtn">Next Week →</button>
+          </div>
+        </div>
+        <div class="card">
+          <div style="overflow-x:auto;">
+            <table class="week-table" id="weekTable"></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ ROUTINES ============ -->
+      <div class="view" id="view-routines">
+        <div class="page-head">
+          <div>
+            <h1>My Routines</h1>
+            <div class="sub">Reusable templates you can apply to any date</div>
+          </div>
+          <button class="add-task-btn" id="newRoutineBtn">+ New Routine</button>
+        </div>
+        <div class="routine-grid" id="routineGrid"></div>
+      </div>
+
+      <!-- ============ HISTORY ============ -->
+      <div class="view" id="view-history">
+        <div class="page-head">
+          <div>
+            <h1 id="histTitle">History</h1>
+            <div class="sub">Completion record — click a date to open it</div>
+          </div>
+          <div class="date-nav">
+            <button id="histPrevMonth">← Month</button>
+            <button id="histNextMonth">Month →</button>
+          </div>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </div>
+
+      <!-- ============ STATS ============ -->
+      <div class="view" id="view-stats">
+        <div class="page-head">
+          <div><h1>Productivity</h1><div class="sub">Calculated from actual stored task data</div></div>
+        </div>
+        <div class="stats-grid">
+          <div class="card stat-card"><div class="label">Today</div><div class="progress-pct" id="statToday">0%</div></div>
+          <div class="card stat-card"><div class="label">This Week</div><div class="progress-pct" id="statWeek">0%</div></div>
+          <div class="card stat-card"><div class="label">This Month</div><div class="progress-pct" id="statMonth">0%</div></div>
+          <div class="card stat-card"><div class="label">This Year</div><div class="progress-pct" id="statYear">0%</div></div>
+        </div>
+        <div class="streak-row">
+          <div class="card streak-card">
+            <div class="flame">🔥</div>
+            <div class="n" id="statStreakCurrent">0</div>
+            <div class="l">Current Streak (days)</div>
+          </div>
+          <div class="card streak-card">
+            <div class="flame">🏆</div>
+            <div class="n" id="statStreakLongest">0</div>
+            <div class="l">Longest Streak (days)</div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="label" style="font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:1px; font-weight:600; margin-bottom:14px;">Category Hours (all time)</div>
+          <div class="hours-grid" id="hoursGrid"></div>
+        </div>
+        <div class="card">
+          <div class="label" style="font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:1px; font-weight:600; margin-bottom:14px;">Task Totals</div>
+          <div class="stats-grid" style="margin-bottom:0;">
+            <div class="stat-card"><div class="label">Completed</div><div class="stat-num good" id="statTotalDone">0</div></div>
+            <div class="stat-card"><div class="label">Missed</div><div class="stat-num bad" id="statTotalMissed">0</div></div>
+            <div class="stat-card"><div class="label">Total Tasks</div><div class="stat-num" id="statTotalAll">0</div></div>
+            <div class="stat-card"><div class="label">Days Tracked</div><div class="stat-num" id="statDaysTracked">0</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ CATEGORIES ============ -->
+      <div class="view" id="view-categories">
+        <div class="page-head">
+          <div><h1>Categories</h1><div class="sub">Organize tasks by type</div></div>
+          <button class="add-task-btn" id="newCatBtn">+ Add Category</button>
+        </div>
+        <div class="cat-list" id="catList"></div>
+      </div>
+
+      <!-- ============ SETTINGS ============ -->
+      <div class="view" id="view-settings">
+        <div class="page-head"><div><h1>Settings</h1><div class="sub">Data lives in your browser's local storage</div></div></div>
+        <div class="card" style="max-width:520px; display:flex; flex-direction:column; gap:14px;">
+          <div>
+            <div style="font-weight:700; font-size:14px; margin-bottom:4px;">Export data</div>
+            <div class="sub" style="margin-bottom:10px;">Download everything as a JSON backup file.</div>
+            <button class="btn" id="settingsExportBtn">⇩ Export JSON</button>
+          </div>
+          <div style="border-top:1px solid var(--border-soft); padding-top:14px;">
+            <div style="font-weight:700; font-size:14px; margin-bottom:4px;">Import data</div>
+            <div class="sub" style="margin-bottom:10px;">Restore from a previously exported JSON file. This replaces current data.</div>
+            <button class="btn" id="settingsImportBtn">⇧ Import JSON</button>
+          </div>
+          <div style="border-top:1px solid var(--border-soft); padding-top:14px;">
+            <div style="font-weight:700; font-size:14px; margin-bottom:4px; color:var(--bad);">Reset all data</div>
+            <div class="sub" style="margin-bottom:10px;">Permanently erase tasks, routines, and history from this browser.</div>
+            <button class="btn danger" id="resetAllBtn">Erase Everything</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ SEARCH RESULTS ============ -->
+      <div class="view" id="view-search">
+        <div class="page-head"><div><h1 id="searchTitle">Search</h1><div class="sub" id="searchSub"></div></div></div>
+        <div class="history-list" id="searchResults"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="bottom-nav" id="bottomNav">
+  <button class="active" data-view="dashboard"><span class="ic">◆</span>Today</button>
+  <button data-view="calendar"><span class="ic">▦</span>Calendar</button>
+  <button data-view="routines"><span class="ic">↻</span>Routines</button>
+  <button data-view="history"><span class="ic">◷</span>History</button>
+  <button data-view="stats"><span class="ic">▲</span>Stats</button>
+</div>
+
+<!-- TASK MODAL -->
+<div class="modal-overlay" id="taskModalOverlay">
+  <div class="modal">
+    <h2 id="taskModalTitle">Add Task</h2>
+    <form id="taskForm">
+      <div class="field"><label>Task name</label><input type="text" id="tName" required placeholder="e.g. DSA Practice"></div>
+      <div class="field"><label>Description</label><textarea id="tDesc" placeholder="Optional details"></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Start time</label><input type="time" id="tStart" required></div>
+        <div class="field"><label>End time</label><input type="time" id="tEnd" required></div>
+      </div>
+      <div class="field"><label>Date</label><input type="date" id="tDate" required></div>
+      <div class="field-row">
+        <div class="field"><label>Category</label><select id="tCategory"></select></div>
+        <div class="field"><label>Priority</label>
+          <div class="radio-group" id="tPriority">
+            <button type="button" class="radio-chip" data-val="low">Low</button>
+            <button type="button" class="radio-chip selected" data-val="medium">Medium</button>
+            <button type="button" class="radio-chip" data-val="high">High</button>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Repeat</label>
+        <div class="radio-group" id="tRepeat">
+          <button type="button" class="radio-chip selected" data-val="none">None</button>
+          <button type="button" class="radio-chip" data-val="daily">Daily</button>
+          <button type="button" class="radio-chip" data-val="weekly">Weekly</button>
+          <button type="button" class="radio-chip" data-val="custom">Custom (every N days)</button>
+        </div>
+      </div>
+      <div class="field" id="tWeekdayField" style="display:none;">
+        <label>Repeat on</label>
+        <div class="weekday-picker" id="tWeekdays">
+          <button type="button" data-d="1">M</button><button type="button" data-d="2">T</button>
+          <button type="button" data-d="3">W</button><button type="button" data-d="4">T</button>
+          <button type="button" data-d="5">F</button><button type="button" data-d="6">S</button>
+          <button type="button" data-d="0">S</button>
+        </div>
+      </div>
+      <div class="field" id="tIntervalField" style="display:none;">
+        <label>Every N days</label><input type="number" id="tInterval" min="2" value="2">
+      </div>
+      <div class="field-row" id="tRepeatRangeField" style="display:none;">
+        <div class="field"><label>Repeat start</label><input type="date" id="tRepeatStart"></div>
+        <div class="field"><label>Repeat end (blank = never ends)</label><input type="date" id="tRepeatEnd"></div>
+      </div>
+      <div class="field"><label>Reminder</label>
+        <select id="tReminder">
+          <option value="">None</option>
+          <option value="5">5 minutes before</option>
+          <option value="10">10 minutes before</option>
+          <option value="30">30 minutes before</option>
+          <option value="60">1 hour before</option>
+        </select>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="tNotes" placeholder="Today's target, reminders to self, etc."></textarea></div>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="taskCancelBtn">Cancel</button>
+        <button type="submit" class="btn primary" id="taskSaveBtn">Save Task</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- EDIT SCOPE MODAL -->
+<div class="modal-overlay" id="scopeModalOverlay">
+  <div class="modal" style="max-width:400px;">
+    <h2 id="scopeModalTitle">This is a recurring task</h2>
+    <div class="scope-options">
+      <label class="scope-option"><input type="radio" name="scope" value="this" checked> <span id="scopeOptThis">Edit this task only</span></label>
+      <label class="scope-option"><input type="radio" name="scope" value="future"> <span id="scopeOptFuture">Edit this and future tasks</span></label>
+      <label class="scope-option"><input type="radio" name="scope" value="all"> <span id="scopeOptAll">Edit entire recurring routine</span></label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="scopeCancelBtn">Cancel</button>
+      <button class="btn primary" id="scopeConfirmBtn">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay" id="deleteModalOverlay">
+  <div class="modal" style="max-width:400px;">
+    <h2>Delete Task?</h2>
+    <p style="font-size:13.5px; color:var(--text-dim); margin-bottom:16px;">Are you sure you want to delete "<span id="deleteTaskName"></span>"?</p>
+    <div class="scope-options" id="deleteScopeOptions" style="display:none;">
+      <label class="scope-option"><input type="radio" name="dscope" value="this" checked> Delete this task only</label>
+      <label class="scope-option"><input type="radio" name="dscope" value="future"> Delete this and future tasks</label>
+      <label class="scope-option"><input type="radio" name="dscope" value="all"> Delete entire recurring routine</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="deleteCancelBtn">Cancel</button>
+      <button class="btn danger" id="deleteConfirmBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROUTINE MODAL -->
+<div class="modal-overlay" id="routineModalOverlay">
+  <div class="modal">
+    <h2 id="routineModalTitle">New Routine</h2>
+    <div class="field"><label>Routine name</label><input type="text" id="rName" placeholder="e.g. College Day"></div>
+    <div class="hint">Add the tasks that make up this routine (times only — dates are set when you apply it).</div>
+    <div id="routineTasksList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;"></div>
+    <button type="button" class="btn-sm" id="routineAddTaskBtn">+ Add task to routine</button>
+    <div class="modal-actions">
+      <button class="btn" id="routineCancelBtn">Cancel</button>
+      <button class="btn primary" id="routineSaveBtn">Save Routine</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROUTINE TASK MINI MODAL -->
+<div class="modal-overlay" id="routineTaskModalOverlay">
+  <div class="modal" style="max-width:380px;">
+    <h2>Routine Task</h2>
+    <div class="field"><label>Task name</label><input type="text" id="rtName"></div>
+    <div class="field-row">
+      <div class="field"><label>Start</label><input type="time" id="rtStart"></div>
+      <div class="field"><label>End</label><input type="time" id="rtEnd"></div>
+    </div>
+    <div class="field"><label>Category</label><select id="rtCategory"></select></div>
+    <div class="modal-actions">
+      <button class="btn" id="rtCancelBtn">Cancel</button>
+      <button class="btn primary" id="rtSaveBtn">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- APPLY ROUTINE MODAL -->
+<div class="modal-overlay" id="applyRoutineModalOverlay">
+  <div class="modal" style="max-width:400px;">
+    <h2>Apply Routine</h2>
+    <div class="field"><label>Choose routine</label><select id="applyRoutineSelect"></select></div>
+    <div class="field"><label>Apply to date</label><input type="date" id="applyRoutineDate"></div>
+    <div class="hint">This adds the routine's tasks to the selected date without touching other days.</div>
+    <div class="modal-actions">
+      <button class="btn" id="applyRoutineCancelBtn">Cancel</button>
+      <button class="btn primary" id="applyRoutineConfirmBtn">Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY MODAL -->
+<div class="modal-overlay" id="catModalOverlay">
+  <div class="modal" style="max-width:380px;">
+    <h2 id="catModalTitle">New Category</h2>
+    <div class="field"><label>Name</label><input type="text" id="catName"></div>
+    <div class="field"><label>Color</label>
+      <div class="radio-group" id="catColorPicker"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="catCancelBtn">Cancel</button>
+      <button class="btn primary" id="catSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script src="js/data.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/task-modal.js"></script>
+<script src="js/task-delete.js"></script>
+<script src="js/calendar.js"></script>
+<script src="js/week.js"></script>
+<script src="js/routines.js"></script>
+<script src="js/history.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/categories.js"></script>
+<script src="js/search.js"></script>
+<script src="js/data-io.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

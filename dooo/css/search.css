@@ -1,0 +1,10 @@
+/* =====================================================
+   SEARCH RESULTS VIEW
+   ===================================================== */
+
+/* ---------- SEARCH RESULTS / FILTER ---------- */
+.filter-bar{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;}
+.filter-bar select, .filter-bar input{
+  background:var(--panel-2); border:1px solid var(--border); border-radius:7px;
+  padding:8px 10px; color:var(--text); font-size:12.5px;
+}

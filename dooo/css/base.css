@@ -1,0 +1,43 @@
+/* =====================================================
+   BASE
+   CSS variables (theme), resets, scrollbars, global element defaults
+   ===================================================== */
+
+:root{
+  --bg:#0f1115;
+  --panel:#161920;
+  --panel-2:#1c2029;
+  --border:#262b36;
+  --border-soft:#20242e;
+  --text:#e8e9ed;
+  --text-dim:#9198a8;
+  --text-faint:#5c6272;
+  --accent:#d4a24c;
+  --accent-dim:#8a6a30;
+  --accent-glow:rgba(212,162,76,0.14);
+  --good:#5fb489;
+  --bad:#d16565;
+  --warn:#d4a24c;
+  --radius:10px;
+  --font-ui:'Inter',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-ui);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:var(--accent-glow); color:var(--accent);}
+::-webkit-scrollbar{width:8px; height:8px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text-faint);}
+
+button{font-family:inherit; cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+
+a{color:inherit;}

@@ -1,0 +1,19 @@
+/* =====================================================
+   ROUTINES VIEW
+   ===================================================== */
+
+/* ---------- ROUTINES ---------- */
+.routine-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px;}
+.routine-card{
+  background:var(--panel); border:1px solid var(--border-soft); border-radius:var(--radius); padding:16px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.routine-card h3{font-size:15px; font-weight:700;}
+.routine-card .count{font-size:12px; color:var(--text-dim);}
+.routine-card .actions{display:flex; gap:8px; margin-top:auto;}
+.btn-sm{
+  padding:7px 12px; border-radius:7px; border:1px solid var(--border); background:var(--panel-2);
+  color:var(--text-dim); font-size:12px; font-weight:600; transition:all .12s;
+}
+.btn-sm:hover{color:var(--text); border-color:var(--text-faint);}
+.btn-sm.accent{background:var(--accent-glow); color:var(--accent); border-color:var(--accent-dim);}
