@@ -18,34 +18,42 @@ function pctForRange(startKey, endKey){
   return {total, done, pct: total? Math.round(done/total*100):0};
 }
 
+function isSuccessfulDay(dateKey){
+  const inst = getInstancesForDate(dateKey);
+  if(!inst.length) return false;
+  const completed = inst.filter(i=>i.completed).length;
+  return (completed / inst.length) >= 0.7;
+}
+
 function computeStreaks(){
-  // walk backward from today; a "successful" day = has tasks and pct >= 70%
-  let current=0, longest=0, running=0;
-  let k = todayKey();
-  // find earliest task date to bound the loop
+  let current = 0;
+  let longest = 0;
+  let running = 0;
+
   let earliest = todayKey();
   DB.tasks.forEach(t=>{
     const s = (t.repeat && t.repeat.start) || t.date;
     if(s < earliest) earliest = s;
   });
-  // forward pass for longest streak
+
   let cursor = earliest;
-  let streakRun = 0;
   while(cursor <= todayKey()){
-    const inst = getInstancesForDate(cursor);
-    const ok = inst.length>0 && (inst.filter(i=>i.completed).length/inst.length) >= 0.7;
-    if(ok){ streakRun++; longest = Math.max(longest, streakRun); }
-    else streakRun = 0;
-    cursor = addDays(cursor,1);
+    if(isSuccessfulDay(cursor)){
+      running += 1;
+      longest = Math.max(longest, running);
+    } else {
+      running = 0;
+    }
+    cursor = addDays(cursor, 1);
   }
-  // backward pass for current streak
+
   let back = todayKey();
-  while(true){
-    const inst = getInstancesForDate(back);
-    const ok = inst.length>0 && (inst.filter(i=>i.completed).length/inst.length) >= 0.7;
-    if(ok){ current++; back = addDays(back,-1); if(back<earliest) break; }
-    else break;
+  while(back >= earliest){
+    if(!isSuccessfulDay(back)) break;
+    current += 1;
+    back = addDays(back, -1);
   }
+
   return {current, longest};
 }
 

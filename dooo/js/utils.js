@@ -5,11 +5,27 @@
 /* =========================================================
    UI HELPERS
    ========================================================= */
-function toast(msg){
+function toast(msg, undoAction){
   const wrap = document.getElementById('toastWrap');
   const el = document.createElement('div');
   el.className = 'toast';
-  el.textContent = msg;
+
+  if(undoAction){
+    el.innerHTML = `
+      <div class="toast-content">
+        <span>${escapeHtml(msg)}</span>
+        <button type="button" class="toast-undo">Undo</button>
+      </div>
+    `;
+    const btn = el.querySelector('.toast-undo');
+    btn.addEventListener('click', ()=>{
+      undoAction();
+      el.remove();
+    });
+  } else {
+    el.textContent = msg;
+  }
+
   wrap.appendChild(el);
   setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 2600);
 }

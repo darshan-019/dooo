@@ -118,7 +118,10 @@
         <div class="timeline-wrap">
           <div class="timeline-head">
             <h2>Timeline</h2>
-            <button class="add-task-btn" id="addTaskBtn">+ Add Task</button>
+            <div style="display:flex; gap:8px;">
+              <button class="add-task-btn" id="addTaskBtn">+ Add Task</button>
+              <button class="btn danger" id="deleteDayBtn">Delete Day</button>
+            </div>
           </div>
           <div class="timeline" id="timelineContainer"></div>
         </div>
@@ -371,6 +374,18 @@
     <div class="modal-actions">
       <button class="btn" id="deleteCancelBtn">Cancel</button>
       <button class="btn danger" id="deleteConfirmBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE DAY MODAL -->
+<div class="modal-overlay" id="deleteDayModalOverlay">
+  <div class="modal" style="max-width:420px;">
+    <h2>Delete all tasks?</h2>
+    <p style="font-size:13.5px; color:var(--text-dim); margin-bottom:18px;">Delete all tasks for <span id="deleteDayLabel"></span>?</p>
+    <div class="modal-actions">
+      <button class="btn" id="deleteDayCancelBtn">Cancel</button>
+      <button class="btn danger" id="deleteDayConfirmBtn">Delete</button>
     </div>
   </div>
 </div>
