@@ -427,8 +427,39 @@
   <div class="modal" style="max-width:400px;">
     <h2>Apply Routine</h2>
     <div class="field"><label>Choose routine</label><select id="applyRoutineSelect"></select></div>
-    <div class="field"><label>Apply to date</label><input type="date" id="applyRoutineDate"></div>
-    <div class="hint">This adds the routine's tasks to the selected date without touching other days.</div>
+    
+    <!-- Apply Mode Toggle -->
+    <div class="field">
+      <label>Apply Mode</label>
+      <div class="radio-group" id="applyModeGroup">
+        <label><input type="radio" name="applyMode" value="date" checked> Once to a date</label>
+        <label><input type="radio" name="applyMode" value="day"> Every [Day of Week]</label>
+      </div>
+    </div>
+
+    <!-- Date Mode -->
+    <div id="applyDateMode">
+      <div class="field"><label>Apply to date</label><input type="date" id="applyRoutineDate"></div>
+      <div class="hint">This adds the routine's tasks to the selected date without touching other days.</div>
+    </div>
+
+    <!-- Day Mode -->
+    <div id="applyDayMode" style="display:none;">
+      <div class="field"><label>Every</label>
+        <select id="applyRoutineDay">
+          <option value="">Select a day</option>
+          <option value="0">Sunday</option>
+          <option value="1">Monday</option>
+          <option value="2">Tuesday</option>
+          <option value="3">Wednesday</option>
+          <option value="4">Thursday</option>
+          <option value="5">Friday</option>
+          <option value="6">Saturday</option>
+        </select>
+      </div>
+      <div class="hint">Creates recurring tasks that repeat every week on this day.</div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn" id="applyRoutineCancelBtn">Cancel</button>
       <button class="btn primary" id="applyRoutineConfirmBtn">Apply</button>

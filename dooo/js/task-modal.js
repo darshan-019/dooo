@@ -91,8 +91,10 @@ taskModal.addEventListener('click', e=>{ if(e.target===taskModal) taskModal.clas
 
 document.getElementById('taskForm').addEventListener('submit', function(e){
   e.preventDefault();
+  
   const name = document.getElementById('tName').value.trim();
-  if(!name) return;
+  if(!name){ toast('Task name required'); return; }
+  
   const start = document.getElementById('tStart').value;
   const end = document.getElementById('tEnd').value;
   const date = document.getElementById('tDate').value;
@@ -100,6 +102,10 @@ document.getElementById('taskForm').addEventListener('submit', function(e){
   const description = document.getElementById('tDesc').value.trim();
   const reminder = document.getElementById('tReminder').value;
   const notes = document.getElementById('tNotes').value.trim();
+
+  if(!start || !end){ toast('Start and end time required'); return; }
+  if(!date){ toast('Date required'); return; }
+  if(!category){ toast('Category required'); return; }
 
   let repeat = {type:'none'};
   if(selectedRepeat!=='none'){
@@ -115,17 +121,32 @@ document.getElementById('taskForm').addEventListener('submit', function(e){
   if(editingContext.mode==='add'){
     const seriesId = repeat.type!=='none' ? uid('series') : null;
     DB.tasks.push({
-      id: uid('task'), seriesId, name, description, start, end, date, category,
-      priority: selectedPriority, reminder, notes, completed:false, repeat
+      id: uid('task'),
+      seriesId,
+      name,
+      description,
+      start,
+      end,
+      date,
+      category,
+      priority: selectedPriority,
+      reminder,
+      notes,
+      completed: false,
+      repeat
     });
     save();
-    toast('Task added');
+    taskModal.classList.remove('active');
+    toast('Task added ✓');
+    currentDate = date;
+    switchView('dashboard');
   } else {
     applyTaskEdit(editingContext.task, editingContext.inst, {name,description,start,end,date,category,priority:selectedPriority,reminder,notes,repeat}, editingContext.scope||'this');
-    toast('Task updated');
+    save();
+    taskModal.classList.remove('active');
+    toast('Task updated ✓');
+    switchView('dashboard');
   }
-  taskModal.classList.remove('active');
-  renderCurrentView();
 });
 
 /* Apply an edit respecting scope for recurring tasks */

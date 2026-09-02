@@ -16,6 +16,10 @@ const DEFAULT_CATEGORIES = [
   {id:'cat_sleep', name:'Sleep', color:'#5c6272'},
   {id:'cat_meal', name:'Meal', color:'#5fb489'},
   {id:'cat_break', name:'Break', color:'#7ea8d4'},
+  {id:'cat_practice', name:'Practice', color:'#e0a458'},
+  {id:'cat_fresh', name:'Fresh', color:'#c77dbf'},
+  {id:'cat_college', name:'College', color:'#6ec6c6'},
+  {id:'cat_study', name:'Study', color:'#8b7e74'},
   {id:'cat_other', name:'Other', color:'#9198a8'},
 ];
 
@@ -54,167 +58,137 @@ function ensureProjectCategoryAndSundaySchedule(db){
 
   if(!Array.isArray(db.routines)) db.routines = [];
 
-  const sundayRoutineExists = db.routines.some(r => r.id === 'routine_sunday' || r.name === 'Sunday Routine');
-  if(!sundayRoutineExists){
-    const sundayRoutineTasks = [
-      {name:'English', start:'07:00', end:'08:30', category:'cat_english'},
-      {name:'Break', start:'08:30', end:'09:00', category:'cat_break'},
-      {name:'English', start:'09:00', end:'12:00', category:'cat_english'},
-      {name:'Lunch', start:'12:00', end:'12:30', category:'cat_meal'},
-      {name:'English', start:'12:30', end:'16:00', category:'cat_english'},
-      {name:'Sleep', start:'16:00', end:'17:00', category:'cat_sleep'},
-      {name:'Project', start:'17:00', end:'19:00', category:'cat_project'},
-      {name:'Reading', start:'19:00', end:'20:30', category:'cat_reading'},
-      {name:'Dinner', start:'20:30', end:'21:00', category:'cat_meal'},
+  ensureWeeklyRoutines(db);
+
+  return db;
+}
+
+function ensureWeeklyRoutines(db){
+  if(!Array.isArray(db.routines)) db.routines = [];
+
+  const weeklyRoutineData = {
+    Monday: [
+      {name:'Sleep', start:'01:00', end:'07:00', category:'cat_sleep'},
+      {name:'Practice', start:'07:00', end:'08:00', category:'cat_practice'},
+      {name:'Fresh', start:'08:00', end:'09:00', category:'cat_fresh'},
+      {name:'English', start:'09:00', end:'10:00', category:'cat_english'},
+      {name:'DSA', start:'10:00', end:'12:00', category:'cat_dsa'},
+      {name:'Lunch', start:'12:00', end:'13:00', category:'cat_meal'},
+      {name:'College', start:'13:00', end:'15:00', category:'cat_college'},
+      {name:'Study', start:'15:00', end:'16:00', category:'cat_study'},
+      {name:'DSA', start:'16:00', end:'17:00', category:'cat_dsa'},
+      {name:'Gym', start:'17:00', end:'19:00', category:'cat_gym'},
+      {name:'English', start:'19:00', end:'20:00', category:'cat_english'},
+      {name:'Dinner', start:'20:00', end:'21:00', category:'cat_meal'},
       {name:'DSA', start:'21:00', end:'23:59', category:'cat_dsa'},
-      {name:'Sleep', start:'00:00', end:'07:00', category:'cat_sleep'},
-    ];
-    db.routines.push({
-      id: 'routine_sunday',
-      name: 'Sunday Routine',
-      tasks: sundayRoutineTasks.map(t => ({id: uid('rt'), ...t}))
-    });
-  }
+    ],
+    Tuesday: [
+      {name:'Sleep', start:'01:00', end:'07:00', category:'cat_sleep'},
+      {name:'Practice', start:'07:00', end:'08:00', category:'cat_practice'},
+      {name:'Fresh', start:'08:00', end:'09:00', category:'cat_fresh'},
+      {name:'English', start:'09:00', end:'10:00', category:'cat_english'},
+      {name:'DSA', start:'10:00', end:'12:00', category:'cat_dsa'},
+      {name:'Lunch', start:'12:00', end:'13:00', category:'cat_meal'},
+      {name:'Study', start:'13:00', end:'15:00', category:'cat_study'},
+      {name:'College', start:'15:00', end:'17:00', category:'cat_college'},
+      {name:'Gym', start:'17:00', end:'19:00', category:'cat_gym'},
+      {name:'English', start:'19:00', end:'20:00', category:'cat_english'},
+      {name:'Dinner', start:'20:00', end:'21:00', category:'cat_meal'},
+      {name:'DSA', start:'21:00', end:'23:59', category:'cat_dsa'},
+    ],
+    Wednesday: [
+      {name:'Sleep', start:'01:00', end:'07:00', category:'cat_sleep'},
+      {name:'Practice', start:'07:00', end:'08:00', category:'cat_practice'},
+      {name:'Fresh', start:'08:00', end:'09:00', category:'cat_fresh'},
+      {name:'English', start:'09:00', end:'10:00', category:'cat_english'},
+      {name:'DSA', start:'10:00', end:'12:00', category:'cat_dsa'},
+      {name:'Lunch', start:'12:00', end:'13:00', category:'cat_meal'},
+      {name:'Study', start:'13:00', end:'16:00', category:'cat_study'},
+      {name:'DSA', start:'16:00', end:'17:00', category:'cat_dsa'},
+      {name:'Gym', start:'17:00', end:'19:00', category:'cat_gym'},
+      {name:'English', start:'19:00', end:'20:00', category:'cat_english'},
+      {name:'Dinner', start:'20:00', end:'21:00', category:'cat_meal'},
+      {name:'DSA', start:'21:00', end:'23:59', category:'cat_dsa'},
+    ],
+    Thursday: [
+      {name:'Sleep', start:'01:00', end:'07:00', category:'cat_sleep'},
+      {name:'Practice', start:'07:00', end:'08:00', category:'cat_practice'},
+      {name:'Fresh', start:'08:00', end:'09:00', category:'cat_fresh'},
+      {name:'English', start:'09:00', end:'10:00', category:'cat_english'},
+      {name:'College', start:'10:00', end:'12:00', category:'cat_college'},
+      {name:'Lunch', start:'12:00', end:'13:00', category:'cat_meal'},
+      {name:'Study', start:'13:00', end:'16:00', category:'cat_study'},
+      {name:'DSA', start:'16:00', end:'17:00', category:'cat_dsa'},
+      {name:'Gym', start:'17:00', end:'19:00', category:'cat_gym'},
+      {name:'English', start:'19:00', end:'20:00', category:'cat_english'},
+      {name:'Dinner', start:'20:00', end:'21:00', category:'cat_meal'},
+      {name:'DSA', start:'21:00', end:'23:59', category:'cat_dsa'},
+    ],
+    Friday: [
+      {name:'Sleep', start:'01:00', end:'07:00', category:'cat_sleep'},
+      {name:'Practice', start:'07:00', end:'08:00', category:'cat_practice'},
+      {name:'Fresh', start:'08:00', end:'09:00', category:'cat_fresh'},
+      {name:'English', start:'09:00', end:'10:00', category:'cat_english'},
+      {name:'DSA', start:'10:00', end:'12:00', category:'cat_dsa'},
+      {name:'Lunch', start:'12:00', end:'13:00', category:'cat_meal'},
+      {name:'Study', start:'13:00', end:'15:00', category:'cat_study'},
+      {name:'College', start:'15:00', end:'17:00', category:'cat_college'},
+      {name:'Gym', start:'17:00', end:'19:00', category:'cat_gym'},
+      {name:'English', start:'19:00', end:'20:00', category:'cat_english'},
+      {name:'Dinner', start:'20:00', end:'21:00', category:'cat_meal'},
+      {name:'DSA', start:'21:00', end:'23:59', category:'cat_dsa'},
+    ],
+    Saturday: [
+      {name:'Sleep', start:'01:00', end:'07:00', category:'cat_sleep'},
+      {name:'Practice', start:'07:00', end:'08:00', category:'cat_practice'},
+      {name:'Fresh', start:'08:00', end:'09:00', category:'cat_fresh'},
+      {name:'English', start:'09:00', end:'10:00', category:'cat_english'},
+      {name:'College', start:'10:00', end:'12:00', category:'cat_college'},
+      {name:'Lunch', start:'12:00', end:'13:00', category:'cat_meal'},
+      {name:'Study', start:'13:00', end:'16:00', category:'cat_study'},
+      {name:'DSA', start:'16:00', end:'17:00', category:'cat_dsa'},
+      {name:'Gym', start:'17:00', end:'19:00', category:'cat_gym'},
+      {name:'English', start:'19:00', end:'20:00', category:'cat_english'},
+      {name:'Dinner', start:'20:00', end:'21:00', category:'cat_meal'},
+      {name:'DSA', start:'21:00', end:'23:59', category:'cat_dsa'},
+    ],
+    Sunday: [
+      {name:'Sleep', start:'01:00', end:'08:00', category:'cat_sleep'},
+      {name:'Practice', start:'08:00', end:'09:00', category:'cat_practice'},
+      {name:'English', start:'09:00', end:'10:00', category:'cat_english'},
+      {name:'DSA', start:'10:00', end:'12:00', category:'cat_dsa'},
+      {name:'Lunch', start:'12:00', end:'13:00', category:'cat_meal'},
+      {name:'Study', start:'13:00', end:'16:00', category:'cat_study'},
+      {name:'DSA', start:'16:00', end:'17:00', category:'cat_dsa'},
+      {name:'Project', start:'17:00', end:'20:00', category:'cat_project'},
+      {name:'Dinner', start:'20:00', end:'21:00', category:'cat_meal'},
+      {name:'DSA', start:'21:00', end:'23:59', category:'cat_dsa'},
+    ]
+  };
 
-  const sundayDay = 0;
-  db.tasks = db.tasks.filter(task => {
-    if(task.name === 'Gym' && task.start === '17:00' && task.end === '19:00' && task.repeat && task.repeat.type === 'weekly' && Array.isArray(task.repeat.weekdays) && task.repeat.weekdays.includes(sundayDay)){
-      task.repeat.weekdays = task.repeat.weekdays.filter(d => d !== sundayDay);
-      return true;
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  days.forEach(day => {
+    const routineExists = db.routines.some(r => r.name === `${day} Routine`);
+    if(!routineExists && weeklyRoutineData[day]){
+      db.routines.push({
+        id: uid('routine'),
+        name: `${day} Routine`,
+        tasks: weeklyRoutineData[day].map(t => ({id: uid('rt'), ...t}))
+      });
     }
-    return true;
   });
-
-  const sundayProject = db.tasks.find(task =>
-    task.name === 'Project' &&
-    task.start === '17:00' &&
-    task.end === '19:00' &&
-    task.category === 'cat_project' &&
-    task.repeat &&
-    task.repeat.type === 'weekly' &&
-    Array.isArray(task.repeat.weekdays) &&
-    task.repeat.weekdays.includes(sundayDay)
-  );
-
-  if(!sundayProject){
-    const start = todayKey();
-    db.tasks.push({
-      id: uid('task'),
-      seriesId: uid('series'),
-      name: 'Project',
-      description: '',
-      start: '17:00',
-      end: '19:00',
-      date: start,
-      category: 'cat_project',
-      priority: 'medium',
-      reminder: '',
-      notes: '',
-      completed: false,
-      repeat: {type:'weekly', weekdays:[0], interval:1, start, end:''}
-    });
-  }
 
   return db;
 }
 
 function seedData(){
   const cats = DEFAULT_CATEGORIES;
-  const catByName = {};
-  cats.forEach(c=>catByName[c.name.toLowerCase()]=c.id);
-
-  const startKey = todayKey();
-  const dailyRoutineTasks = [
-    {name:'English', start:'07:00', end:'08:30', category:'cat_english'},
-    {name:'Break', start:'08:30', end:'09:00', category:'cat_break'},
-    {name:'English', start:'09:00', end:'12:00', category:'cat_english'},
-    {name:'Lunch', start:'12:00', end:'12:30', category:'cat_meal'},
-    {name:'English', start:'12:30', end:'16:00', category:'cat_english'},
-    {name:'Sleep', start:'16:00', end:'17:00', category:'cat_sleep'},
-    {name:'Reading', start:'19:00', end:'20:30', category:'cat_reading'},
-    {name:'Dinner', start:'20:30', end:'21:00', category:'cat_meal'},
-    {name:'DSA', start:'21:00', end:'23:59', category:'cat_dsa'},
-    {name:'Sleep', start:'00:00', end:'07:00', category:'cat_sleep'},
-  ];
-
-  const routine = {
-    id: 'routine_default',
-    name: 'My Daily Routine',
-    tasks: dailyRoutineTasks.map(t=>({id:uid('rt'), ...t}))
-  };
-
-  const sundayRoutineTasks = [
-    ...dailyRoutineTasks,
-    {name:'Project', start:'17:00', end:'19:00', category:'cat_project'},
-    {name:'Reading', start:'19:00', end:'20:30', category:'cat_reading'},
-    {name:'Dinner', start:'20:30', end:'21:00', category:'cat_meal'},
-    {name:'DSA', start:'21:00', end:'23:59', category:'cat_dsa'},
-    {name:'Sleep', start:'00:00', end:'07:00', category:'cat_sleep'},
-  ];
-
-  const sundayRoutine = {
-    id: 'routine_sunday',
-    name: 'Sunday Routine',
-    tasks: sundayRoutineTasks.map(t=>({id:uid('rt'), ...t}))
-  };
-
-  const weeklyGym = {
-    id: uid('task'),
-    seriesId: uid('series'),
-    name: 'Gym',
-    description: '',
-    start: '17:00',
-    end: '19:00',
-    date: startKey,
-    category: 'cat_gym',
-    priority: 'medium',
-    reminder: '',
-    notes: '',
-    completed: false,
-    repeat: {type:'weekly', weekdays:[1,2,3,4,5,6], interval:1, start:startKey, end:''}
-  };
-
-  const sundayProject = {
-    id: uid('task'),
-    seriesId: uid('series'),
-    name: 'Project',
-    description: '',
-    start: '17:00',
-    end: '19:00',
-    date: startKey,
-    category: 'cat_project',
-    priority: 'medium',
-    reminder: '',
-    notes: '',
-    completed: false,
-    repeat: {type:'weekly', weekdays:[0], interval:1, start:startKey, end:''}
-  };
-
-  const tasks = [
-    ...dailyRoutineTasks.map(t => ({
-      id: uid('task'),
-      seriesId: uid('series'),
-      name: t.name,
-      description: '',
-      start: t.start,
-      end: t.end,
-      date: startKey,
-      category: t.category,
-      priority: 'medium',
-      reminder: '',
-      notes: '',
-      completed: false,
-      repeat: {type:'daily', weekdays:[], interval:1, start:startKey, end:''}
-    })),
-    weeklyGym,
-    sundayProject
-  ];
 
   return {
     version: 1,
     categories: cats,
-    routines: [routine, sundayRoutine],
-    tasks: tasks,
+    routines: [],
+    tasks: [],
     exceptions: {},
     completions: {}
   };
@@ -256,9 +230,6 @@ function seriesOccursOnDate(task, key){
   }
 
   const dow = parseKey(key).getDay();
-  if((task.name === 'Gym' || task.category === 'cat_gym') && dow === 0){
-    return false;
-  }
 
   const r = task.repeat;
   const start = r.start || task.date;
